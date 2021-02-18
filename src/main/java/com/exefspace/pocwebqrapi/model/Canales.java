@@ -19,6 +19,8 @@ public class Canales {
     private String updateUser;
     private Timestamp updateDate;
 
+    public Canales(){}
+
     public Canales(Integer idTipoCanal, String codigoCanal, String descripcionCanal, String descripcionUbicacion, String creationUser, Timestamp creationDate, String updateUser, Timestamp updateDate) {
         IdTipoCanal = idTipoCanal;
         CodigoCanal = codigoCanal;

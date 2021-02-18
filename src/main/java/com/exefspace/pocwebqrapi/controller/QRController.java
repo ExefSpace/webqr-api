@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,26 +22,34 @@ import java.util.List;
 public class QRController {
     Logger logger = LoggerFactory.getLogger(QRController.class);
 
-  @Autowired
-  private CanalesRepository canalesRepository;
+
   @Autowired
   private QRListRepository qrListRepository;
-  @Autowired
-  private TipoCanalesRepository tipoCanalesRepository;
 
 
 
-    @GetMapping("/qrlist")
+
+ /*   @GetMapping("/qrlist")
     public List<QRList> getAllQRList() {
         return qrListRepository.findAll();
-    }
+    }*/
 
-    @GetMapping("/qrlist/{IdQR}")
-    public ResponseEntity<QRList> getQRById(@PathVariable(value = "IdQR") Integer IdQR)
+    @GetMapping("/qrlist")
+    public List<QRList> getQR(@RequestParam(required = false)  Integer IdQR)
             throws ResourceNotFoundException {
-        QRList qr = qrListRepository.findById(IdQR).orElseThrow(
-                () -> new ResourceNotFoundException("Evento no encontrado para este ID:: " + IdQR));
-        return ResponseEntity.ok().body(qr);
+
+        List<QRList> lista = new ArrayList<QRList>();
+
+        if(IdQR!=null){
+            QRList qr = qrListRepository.findById(IdQR).orElseThrow(
+                    () -> new ResourceNotFoundException("QR no encontrado para este ID:: " + IdQR));
+            lista.add(qr);
+        }
+        else
+        {
+            lista=qrListRepository.findAll();
+        }
+        return lista;
     }
 
 
@@ -52,6 +61,29 @@ public class QRController {
         //estadoDispositivo(eventosIot.getIdDispositivo());
         return qrListRepository.save(qrList);
     }
+
+
+
+
+
+    @PutMapping("/qrlist")
+    public ResponseEntity<QRList> updateQR(@RequestParam Integer IdQR,
+                                                           @Valid @RequestBody QRList qrList) throws ResourceNotFoundException {
+        QRList result = qrListRepository.findById(IdQR).orElseThrow(
+                () -> new ResourceNotFoundException("QR no encontrado para este id :: " + IdQR));
+
+        result.setCreationDate(qrList.getCreationDate());
+        result.setCreationUser(qrList.getCreationUser());
+        result.setUpdateDate(qrList.getUpdateDate());
+        result.setUpdateUser(qrList.getUpdateUser());
+        result.setIdCanal(qrList.getIdCanal());
+        result.setUrl(qrList.getUrl());
+        result.setIdQR(qrList.getIdQR());
+        QRList updatedQR= qrListRepository.save(result);
+        return ResponseEntity.ok(updatedQR);
+    }
+
+
 
     @GetMapping("/fechasistema")
     public String getFechaSistema() {

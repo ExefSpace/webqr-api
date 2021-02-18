@@ -11,6 +11,7 @@ public class TipoCanales {
     private Integer IdTipoCanal;
     private String DescripcionTipoCanal;
 
+    public TipoCanales(){}
     public TipoCanales(String descripcionTipoCanal) {
         DescripcionTipoCanal = descripcionTipoCanal;
     }

@@ -16,6 +16,8 @@ public class QRList {
     private String updateUser;
     private Timestamp updateDate;
 
+    public QRList(){}
+
     public QRList(String url, Integer idCanal, String creationUser, Timestamp creationDate, String updateUser, Timestamp updateDate) {
         this.url = url;
         IdCanal = idCanal;
