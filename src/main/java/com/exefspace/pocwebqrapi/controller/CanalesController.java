@@ -3,6 +3,8 @@ package com.exefspace.pocwebqrapi.controller;
 
 import com.exefspace.pocwebqrapi.exception.ResourceNotFoundException;
 import com.exefspace.pocwebqrapi.model.Canales;
+import com.exefspace.pocwebqrapi.model.ICanalesTipoCanales;
+import com.exefspace.pocwebqrapi.model.IQRListCanales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.repository.CanalesRepository;
 import org.slf4j.Logger;
@@ -46,5 +48,11 @@ public class CanalesController {
         logger.info(canales.toString());
         //estadoDispositivo(eventosIot.getIdDispositivo());
         return canalesRepository.save(canales);
+    }
+
+    @GetMapping("/canalesxtipo")
+    public List<ICanalesTipoCanales> getCanalesXTipo()
+            throws ResourceNotFoundException {
+        return canalesRepository.obtenerCanalXTiposTodos();
     }
 }
