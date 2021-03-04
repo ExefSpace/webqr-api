@@ -87,7 +87,10 @@ public class QRController {
         return ResponseEntity.ok(updatedQR);
     }
 
-
+    @DeleteMapping("/qrlist")
+    void deleteQR(@RequestParam Integer IdQR) {
+        qrListRepository.deleteById(IdQR);
+    }
 
     @GetMapping("/fechasistema")
     public String getFechaSistema() {

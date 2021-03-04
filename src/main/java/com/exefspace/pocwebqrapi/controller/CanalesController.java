@@ -50,6 +50,31 @@ public class CanalesController {
         return canalesRepository.save(canales);
     }
 
+    @PutMapping("/canales")
+    public ResponseEntity<Canales> updateCanales(@RequestParam Integer IdCanal,
+                                           @Valid @RequestBody Canales canales) throws ResourceNotFoundException {
+        Canales result = canalesRepository.findById(IdCanal).orElseThrow(
+                () -> new ResourceNotFoundException("Canal no encontrado para este id :: " + IdCanal));
+
+        result.setCreationDate(canales.getCreationDate());
+        result.setCreationUser(canales.getCreationUser());
+        result.setUpdateDate(canales.getUpdateDate());
+        result.setUpdateUser(canales.getUpdateUser());
+        result.setCodigoCanal(canales.getCodigoCanal());
+        result.setIdTipoCanal(canales.getIdTipoCanal());
+        result.setDescripcionUbicacion(canales.getDescripcionUbicacion());
+        result.setDescripcionCanal(canales.getDescripcionCanal());
+
+        Canales updatedCanales= canalesRepository.save(result);
+        return ResponseEntity.ok(updatedCanales);
+    }
+
+    @DeleteMapping("/canales")
+    void deleteCanales(@RequestParam Integer IdCanal) {
+        canalesRepository.deleteById(IdCanal);
+    }
+
+
     @GetMapping("/canalesxtipo")
     public List<ICanalesTipoCanales> getCanalesXTipo()
             throws ResourceNotFoundException {

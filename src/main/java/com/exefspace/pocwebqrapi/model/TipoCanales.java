@@ -28,7 +28,7 @@ public class TipoCanales {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IdTipoCanal", nullable = false, unique = true)
 
     public Integer getIdTipoCanal() {

@@ -51,4 +51,26 @@ public class TipoCanalesController {
         return tipoCanalesRepository.save(tipoCanales);
     }
 
+
+    @PutMapping("/tipocanales")
+    public ResponseEntity<TipoCanales> updateTipoCanales(@RequestParam Integer IdTipoCanal,
+                                                 @Valid @RequestBody TipoCanales tipoCanales) throws ResourceNotFoundException {
+        TipoCanales result = tipoCanalesRepository.findById(IdTipoCanal).orElseThrow(
+                () -> new ResourceNotFoundException("tipoCanales no encontrado para este id :: " + IdTipoCanal));
+
+        result.setCreationDate(tipoCanales.getCreationDate());
+        result.setCreationUser(tipoCanales.getCreationUser());
+        result.setUpdateDate(tipoCanales.getUpdateDate());
+        result.setUpdateUser(tipoCanales.getUpdateUser());
+        result.setDescripcionTipoCanal(tipoCanales.getDescripcionTipoCanal());
+
+        TipoCanales updatedTipoCanales= tipoCanalesRepository.save(result);
+        return ResponseEntity.ok(updatedTipoCanales);
+    }
+
+    @DeleteMapping("/tipocanales")
+    void deleteCanales(@RequestParam Integer IdTipoCanal) {
+        tipoCanalesRepository.deleteById(IdTipoCanal);
+    }
+
 }
