@@ -4,10 +4,12 @@ import com.exefspace.pocwebqrapi.exception.ResourceNotFoundException;
 import com.exefspace.pocwebqrapi.model.Canales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.model.TipoCanales;
+import com.exefspace.pocwebqrapi.repository.CanalesRepository;
 import com.exefspace.pocwebqrapi.repository.TipoCanalesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,8 @@ public class TipoCanalesController {
     @Autowired
     private TipoCanalesRepository tipoCanalesRepository;
 
-
+    @Autowired
+    private CanalesRepository canalesRepository;
 
     @GetMapping("/tipocanales")
     public List<TipoCanales> getTipoCanalByIdTipoCanal(@RequestParam(required = false) Integer IdTipoCanal)
@@ -69,8 +72,19 @@ public class TipoCanalesController {
     }
 
     @DeleteMapping("/tipocanales")
-    void deleteCanales(@RequestParam Integer IdTipoCanal) {
-        tipoCanalesRepository.deleteById(IdTipoCanal);
+    ResponseEntity<String> deleteTipoCanales(@RequestParam Integer IdTipoCanal) {
+        Integer conteo = this.canalesRepository.contarCanalesAsociadosATipoCanal(IdTipoCanal);
+        if (conteo>0)
+        {
+            return new ResponseEntity<>(
+                    "El tipo de canal no puede ser eliminado ya que existen canales asociados a este",
+                    HttpStatus.CONFLICT);
+        }
+        else {
+            tipoCanalesRepository.deleteById(IdTipoCanal);
+            return new ResponseEntity<>(
+                    "Se ha eliminado el tipo de canal " + IdTipoCanal,
+                    HttpStatus.OK);
+        }
     }
-
 }

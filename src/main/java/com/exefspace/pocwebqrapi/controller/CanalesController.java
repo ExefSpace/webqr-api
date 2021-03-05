@@ -7,9 +7,11 @@ import com.exefspace.pocwebqrapi.model.ICanalesTipoCanales;
 import com.exefspace.pocwebqrapi.model.IQRListCanales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.repository.CanalesRepository;
+import com.exefspace.pocwebqrapi.repository.QRListRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,8 @@ public class CanalesController {
     Logger logger = LoggerFactory.getLogger(CanalesController.class);
     @Autowired
     private CanalesRepository canalesRepository;
-
+    @Autowired
+    private QRListRepository qrListRepository;
     @GetMapping("/canales")
     public List<Canales> getCanalByIdCanal(@RequestParam(required = false) Integer IdCanal)
             throws ResourceNotFoundException {
@@ -70,8 +73,21 @@ public class CanalesController {
     }
 
     @DeleteMapping("/canales")
-    void deleteCanales(@RequestParam Integer IdCanal) {
-        canalesRepository.deleteById(IdCanal);
+    ResponseEntity<String> deleteCanales(@RequestParam Integer IdCanal) {
+        Integer conteo = this.qrListRepository.contarQRAsociadoACanal(IdCanal);
+        if (conteo>0)
+        {
+            return new ResponseEntity<>(
+                    "El canal no puede ser eliminado ya que existen QR asociados a este",
+                    HttpStatus.CONFLICT);
+        }
+        else {
+            canalesRepository.deleteById(IdCanal);
+            return new ResponseEntity<>(
+                    "Se ha eliminado el canal " + IdCanal,
+                    HttpStatus.OK);
+        }
+
     }
 
 
