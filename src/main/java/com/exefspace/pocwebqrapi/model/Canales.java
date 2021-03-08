@@ -33,7 +33,7 @@ public class Canales {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IdCanal", nullable = false, unique = true)
     public Integer getIdCanal() {
         return IdCanal;

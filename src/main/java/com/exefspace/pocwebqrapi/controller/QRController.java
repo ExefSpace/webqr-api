@@ -1,6 +1,7 @@
 package com.exefspace.pocwebqrapi.controller;
 
 import com.exefspace.pocwebqrapi.exception.ResourceNotFoundException;
+import com.exefspace.pocwebqrapi.model.IQRListCanales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.repository.CanalesRepository;
 import com.exefspace.pocwebqrapi.repository.QRListRepository;
@@ -26,9 +27,6 @@ public class QRController {
   @Autowired
   private QRListRepository qrListRepository;
 
-
-
-
  /*   @GetMapping("/qrlist")
     public List<QRList> getAllQRList() {
         return qrListRepository.findAll();
@@ -50,6 +48,12 @@ public class QRController {
             lista=qrListRepository.findAll();
         }
         return lista;
+    }
+
+    @GetMapping("/qrxcanal")
+    public List<IQRListCanales> getQrXCanal()
+            throws ResourceNotFoundException {
+        return qrListRepository.obtenerQrXCanalTodos();
     }
 
 
@@ -83,7 +87,10 @@ public class QRController {
         return ResponseEntity.ok(updatedQR);
     }
 
-
+    @DeleteMapping("/qrlist")
+    void deleteQR(@RequestParam Integer IdQR) {
+        qrListRepository.deleteById(IdQR);
+    }
 
     @GetMapping("/fechasistema")
     public String getFechaSistema() {

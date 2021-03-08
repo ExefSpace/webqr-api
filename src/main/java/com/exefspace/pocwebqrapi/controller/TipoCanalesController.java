@@ -1,18 +1,22 @@
 package com.exefspace.pocwebqrapi.controller;
 
+import com.exefspace.pocwebqrapi.exception.ErrorDetails;
 import com.exefspace.pocwebqrapi.exception.ResourceNotFoundException;
 import com.exefspace.pocwebqrapi.model.Canales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.model.TipoCanales;
+import com.exefspace.pocwebqrapi.repository.CanalesRepository;
 import com.exefspace.pocwebqrapi.repository.TipoCanalesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,7 +27,8 @@ public class TipoCanalesController {
     @Autowired
     private TipoCanalesRepository tipoCanalesRepository;
 
-
+    @Autowired
+    private CanalesRepository canalesRepository;
 
     @GetMapping("/tipocanales")
     public List<TipoCanales> getTipoCanalByIdTipoCanal(@RequestParam(required = false) Integer IdTipoCanal)
@@ -51,4 +56,38 @@ public class TipoCanalesController {
         return tipoCanalesRepository.save(tipoCanales);
     }
 
+
+    @PutMapping("/tipocanales")
+    public ResponseEntity<TipoCanales> updateTipoCanales(@RequestParam Integer IdTipoCanal,
+                                                 @Valid @RequestBody TipoCanales tipoCanales) throws ResourceNotFoundException {
+        TipoCanales result = tipoCanalesRepository.findById(IdTipoCanal).orElseThrow(
+                () -> new ResourceNotFoundException("tipoCanales no encontrado para este id :: " + IdTipoCanal));
+
+        result.setCreationDate(tipoCanales.getCreationDate());
+        result.setCreationUser(tipoCanales.getCreationUser());
+        result.setUpdateDate(tipoCanales.getUpdateDate());
+        result.setUpdateUser(tipoCanales.getUpdateUser());
+        result.setDescripcionTipoCanal(tipoCanales.getDescripcionTipoCanal());
+
+        TipoCanales updatedTipoCanales= tipoCanalesRepository.save(result);
+        return ResponseEntity.ok(updatedTipoCanales);
+    }
+
+    @DeleteMapping("/tipocanales")
+    ResponseEntity deleteTipoCanales(@RequestParam Integer IdTipoCanal) throws ResourceNotFoundException{
+        TipoCanales result = tipoCanalesRepository.findById(IdTipoCanal).orElseThrow(
+                () -> new ResourceNotFoundException("Tipo Canal no encontrado para este IdTipoCanal : " + IdTipoCanal));
+        Integer conteo = this.canalesRepository.contarCanalesAsociadosATipoCanal(IdTipoCanal);
+        if (conteo>0)
+        {  ErrorDetails errorDetails = new ErrorDetails(new Date(), "El tipo de canal no puede ser eliminado ya que existen canales asociados al id: "+IdTipoCanal, ""+IdTipoCanal);
+            return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+
+        }
+        else {
+            tipoCanalesRepository.deleteById(IdTipoCanal);
+            Message message = new Message("Se ha eliminado el tipo de canal con id " + IdTipoCanal);
+            return new ResponseEntity<>(message,
+                    HttpStatus.OK);
+        }
+    }
 }

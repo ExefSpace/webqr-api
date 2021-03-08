@@ -28,7 +28,7 @@ public class QRList {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IdQR", nullable = false, unique = true)
     public Integer getIdQR() {
         return IdQR;

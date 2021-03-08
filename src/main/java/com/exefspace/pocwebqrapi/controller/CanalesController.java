@@ -1,18 +1,24 @@
 package com.exefspace.pocwebqrapi.controller;
 
 
+import com.exefspace.pocwebqrapi.exception.ErrorDetails;
 import com.exefspace.pocwebqrapi.exception.ResourceNotFoundException;
 import com.exefspace.pocwebqrapi.model.Canales;
+import com.exefspace.pocwebqrapi.model.ICanalesTipoCanales;
+import com.exefspace.pocwebqrapi.model.IQRListCanales;
 import com.exefspace.pocwebqrapi.model.QRList;
 import com.exefspace.pocwebqrapi.repository.CanalesRepository;
+import com.exefspace.pocwebqrapi.repository.QRListRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,7 +27,8 @@ public class CanalesController {
     Logger logger = LoggerFactory.getLogger(CanalesController.class);
     @Autowired
     private CanalesRepository canalesRepository;
-
+    @Autowired
+    private QRListRepository qrListRepository;
     @GetMapping("/canales")
     public List<Canales> getCanalByIdCanal(@RequestParam(required = false) Integer IdCanal)
             throws ResourceNotFoundException {
@@ -46,5 +53,51 @@ public class CanalesController {
         logger.info(canales.toString());
         //estadoDispositivo(eventosIot.getIdDispositivo());
         return canalesRepository.save(canales);
+    }
+
+    @PutMapping("/canales")
+    public ResponseEntity<Canales> updateCanales(@RequestParam Integer IdCanal,
+                                           @Valid @RequestBody Canales canales) throws ResourceNotFoundException {
+        Canales result = canalesRepository.findById(IdCanal).orElseThrow(
+                () -> new ResourceNotFoundException("Canal no encontrado para este id :: " + IdCanal));
+
+        result.setCreationDate(canales.getCreationDate());
+        result.setCreationUser(canales.getCreationUser());
+        result.setUpdateDate(canales.getUpdateDate());
+        result.setUpdateUser(canales.getUpdateUser());
+        result.setCodigoCanal(canales.getCodigoCanal());
+        result.setIdTipoCanal(canales.getIdTipoCanal());
+        result.setDescripcionUbicacion(canales.getDescripcionUbicacion());
+        result.setDescripcionCanal(canales.getDescripcionCanal());
+
+        Canales updatedCanales= canalesRepository.save(result);
+        return ResponseEntity.ok(updatedCanales);
+    }
+
+    @DeleteMapping("/canales")
+    ResponseEntity deleteCanales(@RequestParam Integer IdCanal) throws ResourceNotFoundException {
+        Canales result = canalesRepository.findById(IdCanal).orElseThrow(
+                () -> new ResourceNotFoundException("Canal no encontrado para este IdCanal : " + IdCanal));
+        Integer conteo = this.qrListRepository.contarQRAsociadoACanal(IdCanal);
+        if (conteo>0)
+        {
+            ErrorDetails errorDetails = new ErrorDetails(new Date(), "El canal no puede ser eliminado ya que existen QR asociados al id: "+IdCanal, ""+IdCanal);
+            return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+
+        }
+        else {
+            canalesRepository.deleteById(IdCanal);
+            Message message = new Message("Se ha eliminado el canal con id " + IdCanal);
+            return new ResponseEntity<>(message,
+                    HttpStatus.OK);
+        }
+
+    }
+
+
+    @GetMapping("/canalesxtipo")
+    public List<ICanalesTipoCanales> getCanalesXTipo()
+            throws ResourceNotFoundException {
+        return canalesRepository.obtenerCanalXTiposTodos();
     }
 }
