@@ -94,16 +94,9 @@ public class QRController {
 
     @GetMapping("/fechasistema")
     public String getFechaSistema() {
-
         Instant instant= Instant.now();
         Timestamp tActual = Timestamp.from(instant);
-
-
         long milliseconds2 = tActual.getTime();
-
         //log.info("Current Time Stamp: " + tActual);
-
         return "Timestamp: "+tActual + " tiempo en ms: "+milliseconds2;
-    }
-
-}
+    }}

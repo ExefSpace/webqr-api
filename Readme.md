@@ -1,1 +1,1 @@
-Esta es la api de la poc de colas
+Esta es la api de la web qr
