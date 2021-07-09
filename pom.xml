@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.exefspace</groupId>
-    <artifactId>poc-web-qr</artifactId>
+    <artifactId>poc-web-qr-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>poc-web-qr-api</name>
     <description>Poc Web QR</description>
